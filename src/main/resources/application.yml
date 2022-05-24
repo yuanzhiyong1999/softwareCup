@@ -1,0 +1,38 @@
+# DataSource Config
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  application:
+    name: softwareCup
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.119.157.25:3306/software_cup?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: cc222436
+    hikari:
+      max-lifetime: 500000
+
+  mail:
+    default-encoding: utf-8
+    host: smtp.163.com
+    port:
+    username: software_cup@163.com
+    password: HNWNVNWCCNSIFKUS
+    protocol: smtp
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**Mapper.xml
+
+server:
+  port: 8081
+
+#others:
+#  base_url: http://127.0.0.1
+#  python_url: http://127.0.0.1:5000
+
+others:
+  base_url: http://10.40.16.100
+  python_url: http://10.40.16.100:5000
+
