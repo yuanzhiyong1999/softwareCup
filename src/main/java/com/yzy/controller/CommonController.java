@@ -3,10 +3,7 @@ package com.yzy.controller;
 import com.yzy.common.LoginContext;
 import com.yzy.entity.Records;
 import com.yzy.service.IRecordsService;
-import com.yzy.utils.QiniuCloudUtil;
-import com.yzy.utils.RestTemplateUtil;
-import com.yzy.utils.ResultUtil;
-import com.yzy.utils.Utils;
+import com.yzy.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -21,12 +18,18 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.lang.reflect.Array;
+import java.util.Map;
 
 @RestController
 public class CommonController {
+
+    @Autowired
+    private ChangeDetectionUtil changeDetectionUtil;
 
     @Resource
     private IRecordsService recordsService;
@@ -42,34 +45,26 @@ public class CommonController {
     //    变化检测
     @PostMapping("/changedetection")
     public ResultUtil change_detection(@RequestParam("uploadFile") MultipartFile[] uploadFile) throws Exception {
-
 //            处理
         ResultUtil handle = RestTemplateUtil.changeDetection(uploadFile);
         if (handle.getCode() != 200)
             return ResultUtil.fail(handle.getMsg());
+
+        LinkedHashMap<String,Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
+
+        ArrayList<Object> al = new ArrayList<>();
+        for (Map.Entry<String,Object> entry: lhm.entrySet()){
+            al.add(entry.getValue());
+        }
+
+        InputStream[] files = {uploadFile[0].getInputStream(),uploadFile[1].getInputStream()};
+        String username =  LoginContext.getUser().getEmail();
+
 //            上传图片
+//        String[] url = handle.getData().toString().split("[=}]");
+        changeDetectionUtil.handleOthers(files,al.get(0).toString(),username);
 
-        ResultUtil upload = QiniuCloudUtil.uploadTwo(uploadFile, "change_detection");
-        if (upload.getCode() != 200)
-            return ResultUtil.fail(upload.getMsg());
-
-//        解析数据
-        String[] url = handle.getData().toString().split("[=}]");
-        ArrayList<String> sites = (ArrayList<String>) upload.getData();
-//        System.out.println(url[1]);
-//        System.out.println(sites.get(1));
-
-//      插入数据库
-        Records record = new Records();
-        record.setFirstPic(sites.get(1));
-        record.setSecondPic(sites.get(1));
-        record.setResult(url[1]);
-        record.setType("change_detection");
-        record.setUser(LoginContext.getUser().getEmail());
-        record.setLastTime(Utils.getTime());
-        recordsService.save(record);
-
-        return ResultUtil.succ(url[1],1);
+        return ResultUtil.succ(al.get(0),1);
     }
 
 

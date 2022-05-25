@@ -12,14 +12,14 @@ spring:
     username: root
     password: cc222436
     hikari:
-      max-lifetime: 500000
+      max-lifetime: 60000
 
   mail:
     default-encoding: utf-8
     host: smtp.163.com
     port:
     username: software_cup@163.com
-    password: HNWNVNWCCNSIFKUS
+    password: PQRSNGCTCYBNNHZP
     protocol: smtp
 
 mybatis-plus:
@@ -28,11 +28,13 @@ mybatis-plus:
 server:
   port: 8081
 
-#others:
-#  base_url: http://127.0.0.1
-#  python_url: http://127.0.0.1:5000
-
 others:
-  base_url: http://10.40.16.100
-  python_url: http://10.40.16.100:5000
+  base_url: http://127.0.0.1
+  python_url: http://127.0.0.1:5000
+
+#others:
+##  发邮件激活用 应为前端ip
+#  base_url: http://10.40.16.100
+##  模型部署服务器ip
+#  python_url: http://10.40.16.100:5000
 

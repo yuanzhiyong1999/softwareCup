@@ -7,6 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.SqlReturnUpdateCount;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,7 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
+import java.io.*;
+import java.util.Objects;
 
 @Service
 public class RestTemplateUtil {
@@ -34,6 +36,16 @@ public class RestTemplateUtil {
         this.python_url = python_url;
     }
 
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[4096];
+        int n = 0;
+        while (-1 != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+        return output.toByteArray();
+    }
+
 
     public static ResultUtil changeDetection(MultipartFile[] uploadFile) throws IOException {
         HttpHeaders headers = new HttpHeaders();
@@ -42,21 +54,18 @@ public class RestTemplateUtil {
         MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap<>();
 
         try {
-            ByteArrayResource before = new ByteArrayResource(uploadFile[0].getBytes()){
-                @Override
-                public String getFilename() throws IllegalStateException {
-                    return uploadFile[0].getOriginalFilename();
-                }
-            };
-            paramsMap.add("before", before);
+            String[] arr = {"before","after"};
+            for(int i =0; i<2; i++){
+//                byte[] buffer = toByteArray(uploadFile[i]);
+                ByteArrayResource temp = new ByteArrayResource(uploadFile[i].getBytes()){
+                    @Override
+                    public String getFilename() throws IllegalStateException {
+                        return "y";
+                    }
+                };
+                paramsMap.add(arr[i], temp);
+            }
 
-            ByteArrayResource after = new ByteArrayResource(uploadFile[1].getBytes()){
-                @Override
-                public String getFilename() throws IllegalStateException {
-                    return uploadFile[1].getOriginalFilename();
-                }
-            };
-            paramsMap.add("after", after);
 
             // 构造请求的实体。包含body和headers的内容
 

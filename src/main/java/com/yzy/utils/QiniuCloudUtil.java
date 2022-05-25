@@ -14,7 +14,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,12 +103,21 @@ public class QiniuCloudUtil {
 //        return DOMAIN + key + "?" + style;
     }
 
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[4096];
+        int n = 0;
+        while (-1 != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+        return output.toByteArray();
+    }
 
-    public static ResultUtil uploadTwo(MultipartFile[] uploadFile, String task_name) throws Exception {
+    public static ResultUtil uploadTwo(InputStream[] uploadFile, String task_name) throws Exception {
         try {
             List<String> urls = new ArrayList<>();
-            for (MultipartFile file : uploadFile) {
-                byte[] bytes = file.getBytes();
+            for (InputStream file : uploadFile) {
+                byte[] bytes = toByteArray(file);
                 String imageName = Utils.get_path_name(task_name);
 
                 //使用base64方式上传到七牛云
