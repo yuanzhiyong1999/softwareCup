@@ -36,7 +36,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
     @Value("${others.base_url}")
     private String baseurl;
 
-    @Value("${server.port}")
+    @Value("${others.port}")
     private String port;
 
 

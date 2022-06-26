@@ -30,7 +30,9 @@ server:
 
 others:
   base_url: http://127.0.0.1
+#  python_url: http://101.43.41.139:5000
   python_url: http://127.0.0.1:5000
+  port: 8080
 
 #others:
 ##  发邮件激活用 应为前端ip
