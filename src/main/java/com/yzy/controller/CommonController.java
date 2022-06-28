@@ -5,12 +5,6 @@ import com.yzy.entity.Records;
 import com.yzy.service.IRecordsService;
 import com.yzy.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,16 +25,28 @@ public class CommonController {
     @Autowired
     private ChangeDetectionUtil changeDetectionUtil;
 
-    @Resource
-    private IRecordsService recordsService;
 
-
+    //目标提取
     @PostMapping("/targetextraction")
-    public ResultUtil target_extraction(HttpServletRequest request) {
-        String code = request.getRequestURI().split("/")[2];
-        return ResultUtil.succ(code, 1);
-    }
+    public ResultUtil target_extraction(@RequestParam("uploadFile") MultipartFile uploadFile) throws Exception {
+        ResultUtil handle = RestTemplateUtil.targetExtraction(uploadFile);
+        if (handle.getCode() != 200)
+            return ResultUtil.fail(handle.getMsg());
 
+        LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
+
+        ArrayList<Object> al = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+            al.add(entry.getValue());
+        }
+
+        InputStream[] files = {uploadFile.getInputStream()};
+        String username = LoginContext.getUser().getEmail();
+
+        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
+
+        return ResultUtil.succ(al.get(0), 1);
+    }
 
     //    变化检测
     @PostMapping("/changedetection")
@@ -50,34 +56,64 @@ public class CommonController {
         if (handle.getCode() != 200)
             return ResultUtil.fail(handle.getMsg());
 
-        LinkedHashMap<String,Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
+        LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
 
         ArrayList<Object> al = new ArrayList<>();
-        for (Map.Entry<String,Object> entry: lhm.entrySet()){
+        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
             al.add(entry.getValue());
         }
 
-        InputStream[] files = {uploadFile[0].getInputStream(),uploadFile[1].getInputStream()};
-        String username =  LoginContext.getUser().getEmail();
+        InputStream[] files = {uploadFile[0].getInputStream(), uploadFile[1].getInputStream()};
+        String username = LoginContext.getUser().getEmail();
 
 //            上传图片
 //        String[] url = handle.getData().toString().split("[=}]");
-        changeDetectionUtil.handleOthers(files,al.get(0).toString(),username);
+        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
 
-        return ResultUtil.succ(al.get(0),1);
+        return ResultUtil.succ(al.get(0), 1);
     }
 
-
+    //目标检测
     @PostMapping("/targetdetection")
-    public ResultUtil target_detection(HttpServletRequest request) {
-        String code = request.getRequestURI().split("/")[2];
-        return ResultUtil.succ(code, 1);
+    public ResultUtil target_detection(@RequestParam("uploadFile") MultipartFile uploadFile) throws Exception {
+        ResultUtil handle = RestTemplateUtil.targetDetection(uploadFile);
+        if (handle.getCode() != 200)
+            return ResultUtil.fail(handle.getMsg());
+
+        LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
+
+        ArrayList<Object> al = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+            al.add(entry.getValue());
+        }
+
+        InputStream[] files = {uploadFile.getInputStream()};
+        String username = LoginContext.getUser().getEmail();
+
+        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
+
+        return ResultUtil.succ(al.get(0), 1);
     }
 
-
+    //地形分类
     @PostMapping("/terrainclassification")
-    public ResultUtil terrain_classification(HttpServletRequest request) {
-        String code = request.getRequestURI().split("/")[2];
-        return ResultUtil.succ(code, 1);
+    public ResultUtil terrain_classification(@RequestParam("uploadFile") MultipartFile uploadFile) throws Exception {
+        ResultUtil handle = RestTemplateUtil.terrainClassification(uploadFile);
+        if (handle.getCode() != 200)
+            return ResultUtil.fail(handle.getMsg());
+
+        LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
+
+        ArrayList<Object> al = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+            al.add(entry.getValue());
+        }
+
+        InputStream[] files = {uploadFile.getInputStream()};
+        String username = LoginContext.getUser().getEmail();
+
+        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
+
+        return ResultUtil.succ(al.get(0), 1);
     }
 }

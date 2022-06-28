@@ -6,9 +6,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.SqlReturnUpdateCount;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -54,10 +51,10 @@ public class RestTemplateUtil {
         MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap<>();
 
         try {
-            String[] arr = {"before","after"};
-            for(int i =0; i<2; i++){
+            String[] arr = {"before", "after"};
+            for (int i = 0; i < 2; i++) {
 //                byte[] buffer = toByteArray(uploadFile[i]);
-                ByteArrayResource temp = new ByteArrayResource(uploadFile[i].getBytes()){
+                ByteArrayResource temp = new ByteArrayResource(uploadFile[i].getBytes()) {
                     @Override
                     public String getFilename() throws IllegalStateException {
                         return "y";
@@ -73,8 +70,89 @@ public class RestTemplateUtil {
 
             ResultUtil respBody = restTemplate.postForObject(python_url + "/change_detection", request, ResultUtil.class);
 
-            if (respBody.getCode() == 200){
-                return ResultUtil.succ(respBody.getData(),1);
+            if (respBody.getCode() == 200) {
+                return ResultUtil.succ(respBody.getData(), 1);
+            }
+            return ResultUtil.fail("处理失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.fail("处理异常");
+        }
+    }
+
+    public static ResultUtil targetExtraction(MultipartFile uploadFile) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        //设置提交方式都是表单提交
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap<>();
+
+        try {
+            ByteArrayResource temp = new ByteArrayResource(uploadFile.getBytes()) {
+                @Override
+                public String getFilename() throws IllegalStateException {
+                    return "y";
+                }
+            };
+            paramsMap.add("image", temp);
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(paramsMap, headers);
+            ResultUtil respBody = restTemplate.postForObject(python_url + "/target_extraction", request, ResultUtil.class);
+
+            if (respBody.getCode() == 200) {
+                return ResultUtil.succ(respBody.getData(), 1);
+            }
+            return ResultUtil.fail("处理失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.fail("处理异常");
+        }
+    }
+
+    public static ResultUtil targetDetection(MultipartFile uploadFile) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        //设置提交方式都是表单提交
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap<>();
+
+        try {
+            ByteArrayResource temp = new ByteArrayResource(uploadFile.getBytes()) {
+                @Override
+                public String getFilename() throws IllegalStateException {
+                    return "y";
+                }
+            };
+            paramsMap.add("image", temp);
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(paramsMap, headers);
+            ResultUtil respBody = restTemplate.postForObject(python_url + "/target_detection", request, ResultUtil.class);
+
+            if (respBody.getCode() == 200) {
+                return ResultUtil.succ(respBody.getData(), 1);
+            }
+            return ResultUtil.fail("处理失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.fail("处理异常");
+        }
+    }
+
+    public static ResultUtil terrainClassification(MultipartFile uploadFile) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        //设置提交方式都是表单提交
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap<>();
+
+        try {
+            ByteArrayResource temp = new ByteArrayResource(uploadFile.getBytes()) {
+                @Override
+                public String getFilename() throws IllegalStateException {
+                    return "y";
+                }
+            };
+            paramsMap.add("image", temp);
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(paramsMap, headers);
+            ResultUtil respBody = restTemplate.postForObject(python_url + "/terrain_classification", request, ResultUtil.class);
+
+            if (respBody.getCode() == 200) {
+                return ResultUtil.succ(respBody.getData(), 1);
             }
             return ResultUtil.fail("处理失败");
         } catch (Exception e) {
