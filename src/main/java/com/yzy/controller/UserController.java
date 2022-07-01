@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yzy.entity.EmailCode;
+import com.yzy.entity.Records;
 import com.yzy.service.IEmailCodeService;
+import com.yzy.service.IRecordsService;
 import com.yzy.utils.ResultUtil;
 import com.yzy.utils.TokenUtil;
 import com.yzy.utils.Utils;
@@ -14,8 +16,7 @@ import com.yzy.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.client.RestTemplate;
+import java.util.List;
 
 /**
  * <p>
@@ -34,6 +35,9 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IRecordsService recordsService;
 
 
     @PostMapping("/login")
@@ -127,6 +131,8 @@ public class UserController {
             return ResultUtil.fail("更新个人信息异常");
         }
     }
+
+
 
 }
 

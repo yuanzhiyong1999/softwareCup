@@ -113,7 +113,7 @@ public class QiniuCloudUtil {
         return output.toByteArray();
     }
 
-    public static ResultUtil uploadTwo(InputStream[] uploadFile, String task_name) throws Exception {
+    public static ResultUtil upload(InputStream[] uploadFile, String task_name) throws Exception {
         try {
             List<String> urls = new ArrayList<>();
             for (InputStream file : uploadFile) {

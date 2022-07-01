@@ -1,16 +1,26 @@
 package com.yzy.utils;
 
+import com.yzy.entity.Gallery;
+import com.yzy.entity.Records;
+import com.yzy.service.IGalleryService;
+import com.yzy.service.IRecordsService;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import javax.xml.crypto.Data;
+import javax.annotation.Resource;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
-
+@Service
 public class Utils {
+    @Resource
+    private IRecordsService recordsService;
+
+    @Resource
+    private IGalleryService galleryService;
 
     public static String MD5(String input) {
         //获取MD5机密实例
@@ -35,4 +45,44 @@ public class Utils {
         return String.format("img/%s/%s/%s", task_name, xxx, UUID.randomUUID().toString());
     }
 
+    @Async
+    public void handleOthers(String type, InputStream[] files, String result, String username) throws Exception {
+        ResultUtil upload = QiniuCloudUtil.upload(files, "change_detection");
+
+//        解析数据
+        ArrayList<String> sites = (ArrayList<String>) upload.getData();
+//        System.out.println(url[1]);
+//        System.out.println(sites.get(1));
+
+//      插入数据库
+        Records record = new Records();
+        record.setFirstPic(sites.get(0));
+        if (Objects.equals(type, "change_detection"))
+            record.setSecondPic(sites.get(1));
+        record.setResult(result);
+        record.setType(type);
+        record.setUser(username);
+        record.setLastTime(Utils.getTime());
+        recordsService.save(record);
+    }
+
+    public ResultUtil uploadAndSave (InputStream[] files, String username, ArrayList<String> filesname) throws Exception {
+        ResultUtil upload = QiniuCloudUtil.upload(files, "gallery");
+        if (upload.getCode() != 200)
+            return ResultUtil.fail("上传云盘失败");
+        ArrayList<String> sites = (ArrayList<String>) upload.getData();
+//        System.out.println(sites);
+//        System.out.println(sites.get(1));
+
+//      插入数据库
+        for (int i=0;i<sites.size();i++){
+            Gallery gallery = new Gallery();
+            gallery.setImgName(filesname.get(i));
+            gallery.setImgUrl(sites.get(i));
+            gallery.setUserName(username);
+            gallery.setUploadTime(getTime());
+            galleryService.save(gallery);
+        }
+    return ResultUtil.succ(sites,sites.size());
+    }
 }

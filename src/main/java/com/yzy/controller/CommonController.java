@@ -23,8 +23,7 @@ import java.util.Map;
 public class CommonController {
 
     @Autowired
-    private ChangeDetectionUtil changeDetectionUtil;
-
+    private Utils utils;
 
     //目标提取
     @PostMapping("/targetextraction")
@@ -43,7 +42,7 @@ public class CommonController {
         InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
 
-        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
+        utils.handleOthers("target_extraction",files, al.get(0).toString(), username);
 
         return ResultUtil.succ(al.get(0), 1);
     }
@@ -68,7 +67,7 @@ public class CommonController {
 
 //            上传图片
 //        String[] url = handle.getData().toString().split("[=}]");
-        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
+        utils.handleOthers("change_detection",files, al.get(0).toString(), username);
 
         return ResultUtil.succ(al.get(0), 1);
     }
@@ -80,19 +79,20 @@ public class CommonController {
         if (handle.getCode() != 200)
             return ResultUtil.fail(handle.getMsg());
 
-        LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
-
-        ArrayList<Object> al = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
-            al.add(entry.getValue());
-        }
+//        LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
+//
+//        System.out.println(lhm);
+//        ArrayList<Object> al = new ArrayList<>();
+//        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+//            al.add(entry.getValue());
+//        }
 
         InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
 
-        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
+        utils.handleOthers("target_detection",files,"result", username);
 
-        return ResultUtil.succ(al.get(0), 1);
+        return ResultUtil.succ(handle.getData(), 1);
     }
 
     //地形分类
@@ -112,7 +112,7 @@ public class CommonController {
         InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
 
-        changeDetectionUtil.handleOthers(files, al.get(0).toString(), username);
+        utils.handleOthers("terrain_classification",files, al.get(0).toString(), username);
 
         return ResultUtil.succ(al.get(0), 1);
     }
