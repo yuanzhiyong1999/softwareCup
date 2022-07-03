@@ -46,19 +46,19 @@ public class Utils {
     }
 
     @Async
-    public void handleOthers(String type, InputStream[] files, String result, String username) throws Exception {
-        ResultUtil upload = QiniuCloudUtil.upload(files, "change_detection");
+    public void handleOthers(String type,String before,String after, String result, String username) throws Exception {
+//        ResultUtil upload = QiniuCloudUtil.upload(files, "change_detection");
 
 //        解析数据
-        ArrayList<String> sites = (ArrayList<String>) upload.getData();
+//        ArrayList<String> sites = (ArrayList<String>) upload.getData();
 //        System.out.println(url[1]);
 //        System.out.println(sites.get(1));
 
 //      插入数据库
         Records record = new Records();
-        record.setFirstPic(sites.get(0));
+        record.setFirstPic(before);
         if (Objects.equals(type, "change_detection"))
-            record.setSecondPic(sites.get(1));
+            record.setSecondPic(after);
         record.setResult(result);
         record.setType(type);
         record.setUser(username);

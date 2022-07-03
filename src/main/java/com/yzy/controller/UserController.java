@@ -74,7 +74,7 @@ public class UserController {
         User user1 = new User();
         user1.setEmail(username);
         user1.setPassword(Utils.MD5(password));
-        user1.setIsActive(false);
+        user1.setIsActive(true);
 
         user1.setLastLogin(Utils.getTime());
 
