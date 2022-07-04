@@ -81,6 +81,7 @@ public class Utils {
             gallery.setImgUrl(sites.get(i));
             gallery.setUserName(username);
             gallery.setUploadTime(getTime());
+            gallery.setIsDeleted(0);
             galleryService.save(gallery);
         }
     return ResultUtil.succ(sites,sites.size());

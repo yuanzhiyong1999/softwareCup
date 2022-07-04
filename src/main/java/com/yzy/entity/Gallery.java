@@ -2,6 +2,7 @@ package com.yzy.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -10,7 +11,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author yuanzhiyong
@@ -30,6 +31,9 @@ public class Gallery implements Serializable {
     private String userName;
 
     private Date uploadTime;
+
+    @TableLogic
+    private Integer isDeleted;
 
 
     public Long getId() {
@@ -72,14 +76,24 @@ public class Gallery implements Serializable {
         this.uploadTime = uploadTime;
     }
 
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+
     @Override
     public String toString() {
         return "Gallery{" +
-        "id=" + id +
-        ", imgName=" + imgName +
-        ", imgUrl=" + imgUrl +
-        ", userName=" + userName +
-        ", uploadTime=" + uploadTime +
-        "}";
+                "id=" + id +
+                ", imgName=" + imgName +
+                ", imgUrl=" + imgUrl +
+                ", userName=" + userName +
+                ", uploadTime=" + uploadTime +
+                ", isDeleted=" + isDeleted +
+                "}";
     }
 }
