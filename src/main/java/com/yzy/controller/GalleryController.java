@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yzy.common.LoginContext;
 import com.yzy.entity.Gallery;
-import com.yzy.entity.User;
 import com.yzy.service.IGalleryService;
-import com.yzy.utils.QiniuCloudUtil;
 import com.yzy.utils.ResultUtil;
 import com.yzy.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -84,12 +83,26 @@ public class GalleryController {
     }
 
     @PostMapping("/save2gallery")
-    public ResultUtil save2Gallery(String base64Data,@RequestBody Map<String,String> changeParams) throws Exception {
-        System.out.println(changeParams);
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] bytes = decoder.decode(base64Data);
+    public ResultUtil save2Gallery(@RequestBody Map<String,Object> map) throws Exception {
+
+//        Base64.Decoder decoder = Base64.getDecoder();
+
         String username = LoginContext.getUser().getEmail();
-        ResultUtil result = utils.uploadAndSave(bytes, username, null);
+
+        Map<String, Integer> params= (Map<String, Integer>) map.get("params");
+
+        String filename = "";
+        for (Map.Entry<String, Integer> entry : params.entrySet()) {
+            if (entry.getValue()==0)
+                continue;
+            filename+="-";
+            filename+= entry.getKey();
+            filename+=entry.getValue();
+        }
+        String base64img =map.get("base64Data").toString();
+        byte[] bytes = DatatypeConverter.parseBase64Binary(base64img);
+
+        ResultUtil result = utils.uploadAndSave(bytes, username, filename);
         if (result.getCode() == 200)
             return ResultUtil.succ(result.getData(), result.getCount());
         return ResultUtil.fail(result.getMsg());

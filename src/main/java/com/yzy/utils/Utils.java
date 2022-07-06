@@ -107,6 +107,6 @@ public class Utils {
             return ResultUtil.fail("保存异常");
         }
 
-        return ResultUtil.succ(null,1);
+        return ResultUtil.succ(url,1);
     }
 }
