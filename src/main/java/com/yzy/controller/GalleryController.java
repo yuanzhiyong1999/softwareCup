@@ -7,6 +7,7 @@ import com.yzy.common.LoginContext;
 import com.yzy.entity.Gallery;
 import com.yzy.entity.User;
 import com.yzy.service.IGalleryService;
+import com.yzy.utils.QiniuCloudUtil;
 import com.yzy.utils.ResultUtil;
 import com.yzy.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -51,8 +54,8 @@ public class GalleryController {
             String username = LoginContext.getUser().getEmail();
 
             ResultUtil res = utils.uploadAndSave(files, username, filenames);
-            if (res.getCode() ==200)
-                return ResultUtil.succ(res.getData(),res.getCount());
+            if (res.getCode() == 200)
+                return ResultUtil.succ(res.getData(), res.getCount());
             else
                 return ResultUtil.fail(res.getMsg());
         }
@@ -62,22 +65,35 @@ public class GalleryController {
 
     //获取用户上传图片
     @GetMapping("/getimage")
-    public ResultUtil getImage(String username){
+    public ResultUtil getImage(String username) {
         QueryWrapper<Gallery> galleryQueryWrapper = new QueryWrapper<>();
-        galleryQueryWrapper.eq("user_name",username).select("id","img_name","img_url","upload_time");
-        List<Gallery> list =  galleryService.list(galleryQueryWrapper);
-        return ResultUtil.succ(list,list.size());
+        galleryQueryWrapper.eq("user_name", username).select("id", "img_name", "img_url", "upload_time");
+        List<Gallery> list = galleryService.list(galleryQueryWrapper);
+        return ResultUtil.succ(list, list.size());
     }
 
     @PostMapping("/deleteimg")
-    public ResultUtil deleteImg(String id){
+    public ResultUtil deleteImg(String id) {
         UpdateWrapper<Gallery> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id",id)
-                .set("is_deleted",1);
-        if (galleryService.update(null,updateWrapper))
-            return ResultUtil.succ(null,1);
+        updateWrapper.eq("id", id)
+                .set("is_deleted", 1);
+        if (galleryService.update(null, updateWrapper))
+            return ResultUtil.succ(null, 1);
         return ResultUtil.fail("删除失败");
 
     }
+
+    @PostMapping("/save2gallery")
+    public ResultUtil save2Gallery(String base64Data,@RequestBody Map<String,String> changeParams) throws Exception {
+        System.out.println(changeParams);
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] bytes = decoder.decode(base64Data);
+        String username = LoginContext.getUser().getEmail();
+        ResultUtil result = utils.uploadAndSave(bytes, username, null);
+        if (result.getCode() == 200)
+            return ResultUtil.succ(result.getData(), result.getCount());
+        return ResultUtil.fail(result.getMsg());
+    }
+
 }
 

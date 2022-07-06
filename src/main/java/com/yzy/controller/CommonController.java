@@ -1,5 +1,6 @@
 package com.yzy.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.yzy.common.LoginContext;
 import com.yzy.entity.Records;
 import com.yzy.service.IRecordsService;
@@ -34,42 +35,40 @@ public class CommonController {
 
         LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
 
-        ArrayList<Object> al = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
-            al.add(entry.getValue());
-        }
+        String attention_img = (String) lhm.get("attention_img");
+        String binary_img = (String) lhm.get("binary_img");
 
-//        InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
 
-        utils.handleOthers("target_extraction",image,null, al.get(0).toString(), username);
+        utils.handleOthers("target_extraction", image, null, binary_img, username);
 
-        return ResultUtil.succ(al.get(0), 1);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("binary_img", binary_img);
+        jsonObject.put("attention_img", attention_img);
+
+        return ResultUtil.succ(jsonObject, 1);
     }
 
     //    变化检测
     @PostMapping("/changedetection")
-    public ResultUtil change_detection(String before,String after) throws Exception {
-//            处理
-        ResultUtil handle = RestTemplateUtil.changeDetection(before,after);
+    public ResultUtil change_detection(String before, String after) throws Exception {
+        ResultUtil handle = RestTemplateUtil.changeDetection(before, after);
         if (handle.getCode() != 200)
             return ResultUtil.fail(handle.getMsg());
 
         LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
 
-        ArrayList<Object> al = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
-            al.add(entry.getValue());
-        }
+        String attention_img = (String) lhm.get("attention_img");
+        String binary_img = (String) lhm.get("binary_img");
 
-//        InputStream[] files = {uploadFile[0].getInputStream(), uploadFile[1].getInputStream()};
         String username = LoginContext.getUser().getEmail();
 
-//            上传图片
-//        String[] url = handle.getData().toString().split("[=}]");
-        utils.handleOthers("change_detection",before,after,al.get(0).toString(), username);
+        utils.handleOthers("change_detection", before, after, binary_img, username);
 
-        return ResultUtil.succ(al.get(0), 1);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("binary_img", binary_img);
+        jsonObject.put("attention_img", attention_img);
+        return ResultUtil.succ(jsonObject,1);
     }
 
     //目标检测
@@ -90,7 +89,7 @@ public class CommonController {
 //        InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
 
-        utils.handleOthers("target_detection",image,null,"result", username);
+        utils.handleOthers("target_detection", image, null, "result", username);
 
         return ResultUtil.succ(handle.getData(), 1);
     }
@@ -104,16 +103,17 @@ public class CommonController {
 
         LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
 
-        ArrayList<Object> al = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
-            al.add(entry.getValue());
-        }
+        String attention_img = (String) lhm.get("attention_img");
+        String binary_img = (String) lhm.get("binary_img");
 
-//        InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
 
-        utils.handleOthers("terrain_classification",image,null, al.get(0).toString(), username);
+        utils.handleOthers("terrain_classification", image, null, binary_img, username);
 
-        return ResultUtil.succ(al.get(0), 1);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("binary_img", binary_img);
+        jsonObject.put("attention_img", attention_img);
+
+        return ResultUtil.succ(jsonObject, 1);
     }
 }

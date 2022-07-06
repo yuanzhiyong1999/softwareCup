@@ -86,4 +86,27 @@ public class Utils {
         }
     return ResultUtil.succ(sites,sites.size());
     }
+    public ResultUtil uploadAndSave (byte[] base64Data, String username, String condition) throws Exception {
+        String imageName = Utils.get_path_name("enhancement");
+        String url = null;
+        try {
+            url = QiniuCloudUtil.put64image(base64Data, imageName);
+        }catch (Exception e){
+            return ResultUtil.fail("上传异常");
+        }
+
+        try {
+            Gallery gallery = new Gallery();
+            gallery.setImgName(condition);
+            gallery.setImgUrl(url);
+            gallery.setUserName(username);
+            gallery.setUploadTime(getTime());
+            gallery.setIsDeleted(0);
+            galleryService.save(gallery);
+        }catch (Exception b){
+            return ResultUtil.fail("保存异常");
+        }
+
+        return ResultUtil.succ(null,1);
+    }
 }
