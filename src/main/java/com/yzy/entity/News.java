@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author yuanzhiyong
@@ -27,6 +27,8 @@ public class News implements Serializable {
     private String title;
 
     private String url;
+
+    private String type;
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Date releaseTime;
@@ -56,6 +58,14 @@ public class News implements Serializable {
         this.url = url;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Date getReleaseTime() {
         return releaseTime;
     }
@@ -67,10 +77,11 @@ public class News implements Serializable {
     @Override
     public String toString() {
         return "News{" +
-        "id=" + id +
-        ", title=" + title +
-        ", url=" + url +
-        ", releaseTime=" + releaseTime +
-        "}";
+                "id=" + id +
+                ", title=" + title +
+                ", url=" + url +
+                ", type=" + type +
+                ", releaseTime=" + releaseTime +
+                "}";
     }
 }

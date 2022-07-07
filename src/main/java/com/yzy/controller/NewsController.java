@@ -52,11 +52,11 @@ public class NewsController {
 //    }
 
     @GetMapping("/get")
-    public ResultUtil getNews(long pageNum,long pageSize){
+    public ResultUtil getNews(long pageNum,long pageSize, String type){
 
         Page<News> news = new Page<>(pageNum,pageSize);
         QueryWrapper<News> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc("release_time");
+        queryWrapper.eq("type",type).orderByDesc("release_time");
         newsMapper.selectPage(news,queryWrapper);
 
         JSONObject jsonObject = new JSONObject();
