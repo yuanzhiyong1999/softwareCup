@@ -3,6 +3,9 @@ package com.yzy.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,7 +20,7 @@ import java.util.Date;
 @TableName("tb_records")
 public class Records implements Serializable {
 
-
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -49,6 +52,7 @@ public class Records implements Serializable {
     /**
      * 最后操作时间
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Date lastTime;
 
 

@@ -28,6 +28,7 @@ public class News implements Serializable {
 
     private String url;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Date releaseTime;
 
 

@@ -78,15 +78,6 @@ public class CommonController {
         if (handle.getCode() != 200)
             return ResultUtil.fail(handle.getMsg());
 
-//        LinkedHashMap<String, Object> lhm = (LinkedHashMap<String, Object>) handle.getData();
-//
-//        System.out.println(lhm);
-//        ArrayList<Object> al = new ArrayList<>();
-//        for (Map.Entry<String, Object> entry : lhm.entrySet()) {
-//            al.add(entry.getValue());
-//        }
-
-//        InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
         String result = (String) handle.getData();
 

@@ -2,6 +2,7 @@ package com.yzy.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yzy.entity.News;
 import com.yzy.entity.User;
@@ -54,7 +55,9 @@ public class NewsController {
     public ResultUtil getNews(long pageNum,long pageSize){
 
         Page<News> news = new Page<>(pageNum,pageSize);
-        newsMapper.selectPage(news,null);
+        QueryWrapper<News> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("release_time");
+        newsMapper.selectPage(news,queryWrapper);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("records", news.getRecords());
@@ -63,5 +66,6 @@ public class NewsController {
 
         return ResultUtil.succ(jsonObject,news.getRecords().size());
     }
+
 }
 
