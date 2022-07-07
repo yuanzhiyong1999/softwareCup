@@ -88,10 +88,11 @@ public class CommonController {
 
 //        InputStream[] files = {uploadFile.getInputStream()};
         String username = LoginContext.getUser().getEmail();
+        String result = (String) handle.getData();
 
-        utils.handleOthers("target_detection", image, null, "result", username);
+        utils.handleOthers("target_detection", image, null, result, username);
 
-        return ResultUtil.succ(handle.getData(), 1);
+        return ResultUtil.succ(result, 1);
     }
 
     //地形分类
