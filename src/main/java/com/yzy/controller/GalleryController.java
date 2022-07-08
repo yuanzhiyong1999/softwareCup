@@ -1,10 +1,14 @@
 package com.yzy.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yzy.common.LoginContext;
 import com.yzy.entity.Gallery;
+import com.yzy.entity.News;
+import com.yzy.mapper.GalleryMapper;
 import com.yzy.service.IGalleryService;
 import com.yzy.utils.ResultUtil;
 import com.yzy.utils.Utils;
@@ -13,12 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.xml.bind.DatatypeConverter;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -35,6 +37,9 @@ public class GalleryController {
 
     @Autowired
     private IGalleryService galleryService;
+
+    @Resource
+    private GalleryMapper galleryMapper;
 
     @Autowired
     private Utils utils;
@@ -64,11 +69,19 @@ public class GalleryController {
 
     //获取用户上传图片
     @GetMapping("/getimage")
-    public ResultUtil getImage(String username) {
-        QueryWrapper<Gallery> galleryQueryWrapper = new QueryWrapper<>();
-        galleryQueryWrapper.eq("user_name", username).select("id", "img_name", "img_url", "upload_time");
-        List<Gallery> list = galleryService.list(galleryQueryWrapper);
-        return ResultUtil.succ(list, list.size());
+    public ResultUtil getImage(long pageNum,long pageSize,String username) {
+        Page<Gallery> galleryPage = new Page<>(pageNum,pageSize);
+        QueryWrapper<Gallery> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id", "img_name", "img_url", "upload_time")
+                .eq("user_name",username)
+                .orderByDesc("upload_time");
+        galleryMapper.selectPage(galleryPage,queryWrapper);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("records", galleryPage.getRecords());
+        jsonObject.put("total", galleryPage.getTotal());
+        jsonObject.put("pages",galleryPage.getPages());
+        return ResultUtil.succ(jsonObject, galleryPage.getRecords().size());
     }
 
     @PostMapping("/deleteimg")
@@ -89,11 +102,11 @@ public class GalleryController {
 
         String username = LoginContext.getUser().getEmail();
 
-        Map<String, Integer> params= (Map<String, Integer>) map.get("params");
+        Map<String, Double> params= (Map<String, Double>) map.get("params");
 
         String filename = "";
-        for (Map.Entry<String, Integer> entry : params.entrySet()) {
-            if (entry.getValue()==0)
+        for (Map.Entry<String, Double> entry : params.entrySet()) {
+            if (Objects.equals(entry.getValue(), (double) 0))
                 continue;
             filename+="-";
             filename+= entry.getKey();
