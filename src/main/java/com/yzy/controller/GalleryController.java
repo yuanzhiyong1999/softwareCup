@@ -68,6 +68,15 @@ public class GalleryController {
     }
 
     //获取用户上传图片
+    @GetMapping("/getallimage")
+    public ResultUtil getallImage(String username) {
+        QueryWrapper<Gallery> galleryQueryWrapper = new QueryWrapper<>();
+        galleryQueryWrapper.eq("user_name", username).select("id", "img_name", "img_url", "upload_time");
+        List<Gallery> list = galleryService.list(galleryQueryWrapper);
+        return ResultUtil.succ(list, list.size());
+
+    }
+    //获取用户上传图片
     @GetMapping("/getimage")
     public ResultUtil getImage(long pageNum,long pageSize,String username) {
         Page<Gallery> galleryPage = new Page<>(pageNum,pageSize);
