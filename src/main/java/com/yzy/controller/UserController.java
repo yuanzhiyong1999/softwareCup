@@ -14,6 +14,7 @@ import com.yzy.utils.Utils;
 import com.yzy.entity.User;
 import com.yzy.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -131,6 +132,22 @@ public class UserController {
             return ResultUtil.fail("更新个人信息异常");
         }
     }
+
+    @GetMapping("/getuserinfo")
+    public ResultUtil getUserInfo(String email){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("email",email);
+        try {
+            User user = userService.getOne(queryWrapper);
+            user.setPassword(null);
+            return ResultUtil.succ(user,1);
+        }catch (Exception e){
+            return ResultUtil.fail("获取用户信息异常");
+        }
+
+    }
+
+
 
 
 
