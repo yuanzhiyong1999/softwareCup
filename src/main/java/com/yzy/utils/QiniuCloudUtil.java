@@ -80,12 +80,12 @@ public class QiniuCloudUtil {
 //    }
 
     //base64方式上传
-    public static String put64image(byte[] base64, String key) throws Exception{
+    public static String put64image(byte[] base64, String key) throws Exception {
         String file64 = Base64.encodeToString(base64, 0);
         Integer len = base64.length;
 
         //华北空间使用 upload-z1.qiniu.com，华南空间使用 upload-z2.qiniu.com，北美空间使用 upload-na0.qiniu.com
-        String url = "http://upload-z1.qiniu.com/putb64/" + len + "/key/"+ UrlSafeBase64.encodeToString(key);
+        String url = "http://upload-z1.qiniu.com/putb64/" + len + "/key/" + UrlSafeBase64.encodeToString(key);
 
         RequestBody rb = RequestBody.create(null, file64);
         Request request = new Request.Builder()
@@ -124,8 +124,24 @@ public class QiniuCloudUtil {
                 String url = put64image(bytes, imageName);
                 urls.add(url);
             }
-            return ResultUtil.succ(urls,1);
-        }catch (Exception e){
+            return ResultUtil.succ(urls, 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.fail("保存记录异常");
+        }
+    }
+
+    public static ResultUtil upload(InputStream uploadFile, String task_name) throws Exception {
+        try {
+            List<String> urls = new ArrayList<>();
+            byte[] bytes = toByteArray(uploadFile);
+            String imageName = Utils.get_path_name(task_name);
+
+            //使用base64方式上传到七牛云
+            String url = put64image(bytes, imageName);
+            urls.add(url);
+            return ResultUtil.succ(urls, 1);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultUtil.fail("保存记录异常");
         }

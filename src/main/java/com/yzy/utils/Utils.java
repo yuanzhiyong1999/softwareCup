@@ -1,9 +1,12 @@
 package com.yzy.utils;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yzy.entity.Gallery;
 import com.yzy.entity.Records;
+import com.yzy.entity.User;
 import com.yzy.service.IGalleryService;
 import com.yzy.service.IRecordsService;
+import com.yzy.service.IUserService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -22,12 +25,15 @@ public class Utils {
     @Resource
     private IGalleryService galleryService;
 
+    @Resource
+    private IUserService userService;
+
     public static String MD5(String input) {
         //获取MD5机密实例
         return DigestUtils.md5DigestAsHex(input.getBytes());
     }
 
-    public static Timestamp getTime(){
+    public static Timestamp getTime() {
         Date date = new Date();//获得系统时间.
 
         String nowTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);//将时间格式转换成符合Timestamp要求的格式.
@@ -36,7 +42,7 @@ public class Utils {
 
     }
 
-    public static String get_path_name(String task_name){
+    public static String get_path_name(String task_name) {
         Calendar ca = Calendar.getInstance();
         String year = String.valueOf(ca.get(Calendar.YEAR));
         String month = String.valueOf(ca.get(Calendar.MONTH) + 1);
@@ -46,7 +52,7 @@ public class Utils {
     }
 
     @Async
-    public void handleOthers(String type,String before,String after, String result, String username) throws Exception {
+    public void handleOthers(String type, String before, String after, String result, String username) throws Exception {
 //        ResultUtil upload = QiniuCloudUtil.upload(files, "change_detection");
 
 //        解析数据
@@ -66,7 +72,7 @@ public class Utils {
         recordsService.save(record);
     }
 
-    public ResultUtil uploadAndSave (InputStream[] files, String username, ArrayList<String> filesname) throws Exception {
+    public ResultUtil uploadAndSave(InputStream[] files, String username, ArrayList<String> filesname) throws Exception {
         ResultUtil upload = QiniuCloudUtil.upload(files, "gallery");
         if (upload.getCode() != 200)
             return ResultUtil.fail("上传云盘失败");
@@ -75,7 +81,7 @@ public class Utils {
 //        System.out.println(sites.get(1));
 
 //      插入数据库
-        for (int i=0;i<sites.size();i++){
+        for (int i = 0; i < sites.size(); i++) {
             Gallery gallery = new Gallery();
             gallery.setImgName(filesname.get(i));
             gallery.setImgUrl(sites.get(i));
@@ -84,14 +90,29 @@ public class Utils {
             gallery.setIsDeleted(0);
             galleryService.save(gallery);
         }
-    return ResultUtil.succ(sites,sites.size());
+        return ResultUtil.succ(sites, sites.size());
     }
-    public ResultUtil uploadAndSave (byte[] base64Data, String username, String condition) throws Exception {
+
+    public ResultUtil uploadAndSave(InputStream file, String username, String filename) throws Exception {
+        ResultUtil upload = QiniuCloudUtil.upload(file, "avatar");
+        if (upload.getCode() != 200)
+            return ResultUtil.fail("上传云盘失败");
+
+        ArrayList<String> sites = (ArrayList<String>) upload.getData();
+
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("email", username)
+                .set("avatar", sites.get(0));
+        userService.update(null, updateWrapper);
+        return ResultUtil.succ(sites.get(0), sites.size());
+    }
+
+    public ResultUtil uploadAndSave(byte[] base64Data, String username, String condition) throws Exception {
         String imageName = Utils.get_path_name("enhancement");
         String url = null;
         try {
             url = QiniuCloudUtil.put64image(base64Data, imageName);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResultUtil.fail("上传异常");
         }
 
@@ -103,10 +124,10 @@ public class Utils {
             gallery.setUploadTime(getTime());
             gallery.setIsDeleted(0);
             galleryService.save(gallery);
-        }catch (Exception b){
+        } catch (Exception b) {
             return ResultUtil.fail("保存异常");
         }
 
-        return ResultUtil.succ(url,1);
+        return ResultUtil.succ(url, 1);
     }
 }

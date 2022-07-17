@@ -2,12 +2,13 @@ package com.yzy.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author yuanzhiyong
@@ -22,6 +23,8 @@ public class User implements Serializable {
     private String username;
 
     private Integer gender;
+
+    private String avatar;
 
     private String password;
 
@@ -54,6 +57,14 @@ public class User implements Serializable {
         this.gender = gender;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -81,12 +92,13 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-        "email=" + email +
-        ", username=" + username +
-        ", gender=" + gender +
-        ", password=" + password +
-        ", lastLogin=" + lastLogin +
-        ", isActive=" + isActive +
-        "}";
+                "email=" + email +
+                ", username=" + username +
+                ", gender=" + gender +
+                ", avatar=" + avatar +
+                ", password=" + password +
+                ", lastLogin=" + lastLogin +
+                ", isActive=" + isActive +
+                "}";
     }
 }

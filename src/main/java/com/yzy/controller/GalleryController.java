@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yzy.common.LoginContext;
 import com.yzy.entity.Gallery;
-import com.yzy.entity.News;
 import com.yzy.mapper.GalleryMapper;
 import com.yzy.service.IGalleryService;
 import com.yzy.utils.ResultUtil;
@@ -20,7 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.xml.bind.DatatypeConverter;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -111,11 +113,11 @@ public class GalleryController {
 
         String username = LoginContext.getUser().getEmail();
 
-        Map<String, Double> params= (Map<String, Double>) map.get("params");
+        Map<String, Integer> params= (Map<String, Integer>) map.get("params");
 
         String filename = "";
-        for (Map.Entry<String, Double> entry : params.entrySet()) {
-            if (Objects.equals(entry.getValue(), (double) 0))
+        for (Map.Entry<String, Integer> entry : params.entrySet()) {
+            if (entry.getValue()==0)
                 continue;
             filename+="-";
             filename+= entry.getKey();
